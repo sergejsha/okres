@@ -33,3 +33,11 @@ fun main(fetchEmails: FetchEmails) {
     }
 }
 ```
+
+# Download
+
+```
+dependencies {
+    implementation 'de.halfbit:okres-jvm:1.0'
+}
+```
