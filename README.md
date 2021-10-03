@@ -34,8 +34,7 @@ fun main(fetchEmails: FetchEmails) {
 }
 ```
 
-# Download
-
+# Binaries
 ```
 dependencies {
     implementation 'de.halfbit:okres-jvm:1.0'
