@@ -8,7 +8,7 @@ sealed interface Res<out Ok, out Er> {
 }
 ```
 
-# Example
+# Usage example
 ```kotlin
 interface FetchEmails {
   operator fun invoke(): Res<Value, Failure>
