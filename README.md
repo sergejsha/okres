@@ -42,7 +42,7 @@ fun main(fetchEmails: FetchEmails) {
 ```
 
 # Binaries
-```
+```gradle
 // for jvm projects
 dependencies {
     implementation 'de.halfbit:okres-jvm:1.0'
