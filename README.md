@@ -1,6 +1,13 @@
 # Okres
 Concise result type representing success and error values
 
+```kotlin
+sealed interface Res<out Ok, out Er> {
+    data class Ok<out Ok>(val value: Ok) : Res<Ok, Nothing>
+    data class Er<out Er>(val value: Er) : Res<Nothing, Er>
+}
+```
+
 # Example
 ```kotlin
 interface FetchEmails {
