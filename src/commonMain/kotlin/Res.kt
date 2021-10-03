@@ -15,9 +15,9 @@ package okres
  *     data class Emails(val emails: List<Email>) : Value
  *   }
  *
- *   sealed interface Failure {
- *      object BadCredentials : Failure
- *      object BadConnection : Failure
+ *   enum class Failure {
+ *      BadCredentials,
+ *      BadConnection
  *   }
  * }
  *
