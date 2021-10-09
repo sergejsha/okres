@@ -2,23 +2,23 @@
 Concise result type representing success and error values
 
 ```kotlin
-sealed interface Res<out Ok, out Er> {
-    data class Ok<out Ok>(val value: Ok) : Res<Ok, Nothing>
-    data class Er<out Er>(val value: Er) : Res<Nothing, Er>
+sealed interface Res<out Value, out Error> {
+    data class Ok<out Value>(val value: Value) : Res<Value, Nothing>
+    data class Err<out Error>(val error: Error) : Res<Nothing, Error>
 }
 ```
 
 # Usage example
 ```kotlin
 interface FetchEmails {
-  operator fun invoke(): Res<Value, Failure>
+  operator fun invoke(): Res<Value, Error>
   
   sealed interface Value {
     object NoEmails : Value
     data class Emails(val emails: List<Email>) : Value
   }
 
-  enum class Failure {
+  enum class Error {
      BadCredentials,
      BadConnection
   }
@@ -32,10 +32,10 @@ fun main(fetchEmails: FetchEmails) {
         Value.Emails -> println(value.emails)
       }
     }
-    .onEr { failure ->
-      when(failure) {
-        Failure.BadCredentials -> println("bad credentials")
-        Failure.BadConnection -> println("bad connection")
+    .onErr { error ->
+      when(error) {
+        Error.BadCredentials -> println("bad credentials")
+        Error.BadConnection -> println("bad connection")
       }
     }
 }
@@ -45,6 +45,6 @@ fun main(fetchEmails: FetchEmails) {
 ```gradle
 // for jvm projects
 dependencies {
-    implementation 'de.halfbit:okres-jvm:1.0'
+    implementation 'de.halfbit:okres-jvm:2.0'
 }
 ```
