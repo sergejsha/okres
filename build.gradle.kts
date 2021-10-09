@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "de.halfbit"
-version = "2.0"
+version = "2.1"
 
 buildscript {
     repositories {

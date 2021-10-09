@@ -9,24 +9,30 @@ package okres
  * The computation must never throw any exceptions. `Res.Err`
  * must be returned instead.
  */
-sealed interface Res<out Ok, out Err> {
-    data class Ok<out Ok>(val value: Ok) : Res<Ok, Nothing>
-    data class Err<out Err>(val error: Err) : Res<Nothing, Err>
+sealed interface Res<out Value, out Err> {
+    data class Ok<out Value>(val value: Value) : Res<Value, Nothing>
+    data class Err<out Error>(val error: Error) : Res<Nothing, Error>
 }
 
-/** Returns [Res.Ok] with the receiver value. */
+/** Wraps receiver value with [Res.Ok]. */
 val <Ok> Ok.ok get() = Res.Ok(this)
 
-/** Returns [Res.Err] with the receiver value. */
+/** Wraps receiver value with [Res.Err]. */
 val <Err> Err.err get() = Res.Err(this)
 
 /** Executes given `action` if the receiver is [Res.Ok]. */
-inline fun <Ok, Er> Res<Ok, Er>.onOk(action: (ok: Ok) -> Unit): Res<Ok, Er> =
-    apply { if (this is Res.Ok) action(value) }
+inline fun <Value, Error> Res<Value, Error>.onOk(
+    action: (ok: Value) -> Unit
+): Res<Value, Error> = apply {
+    if (this is Res.Ok) action(value)
+}
 
 /** Executes given `action` if the receiver is [Res.Err]. */
-inline fun <Ok, Err> Res<Ok, Err>.onErr(action: (err: Err) -> Unit): Res<Ok, Err> =
-    apply { if (this is Res.Err) action(error) }
+inline fun <Value, Error> Res<Value, Error>.onErr(
+    action: (err: Error) -> Unit
+): Res<Value, Error> = apply {
+    if (this is Res.Err) action(error)
+}
 
 /**
  * Transforms the value of `Res.Ok` to another value by applying `transform` function.
@@ -34,9 +40,9 @@ inline fun <Ok, Err> Res<Ok, Err>.onErr(action: (err: Err) -> Unit): Res<Ok, Err
  * - if the result is `Res.Ok`, the `transform` block will be called.
  * - if the result is `Res.Err`, the same error will propagate through.
  */
-inline fun <Ok, Err> Res<Ok, Err>.map(
-    transform: (value: Ok) -> Ok
-): Res<Ok, Err> = when (this) {
+inline fun <Value, Error, Value2> Res<Value, Error>.map(
+    transform: (value: Value) -> Value2
+): Res<Value2, Error> = when (this) {
     is Res.Ok -> Res.Ok(transform(value))
     is Res.Err -> this
 }
@@ -47,9 +53,9 @@ inline fun <Ok, Err> Res<Ok, Err>.map(
  * - if the result is `Res.Err`, the `transform` block will be called.
  * - if the result is `Res.Ok`, the same value will propagate through.
  */
-inline fun <Ok, Err, Err2> Res<Ok, Err>.mapErr(
-    block: (err: Err) -> Err2
-): Res<Ok, Err2> = when (this) {
+inline fun <Value, Error, Error2> Res<Value, Error>.mapErr(
+    block: (err: Error) -> Error2
+): Res<Value, Error2> = when (this) {
     is Res.Ok -> this
     is Res.Err -> Res.Err(block(error))
 }
@@ -58,9 +64,9 @@ inline fun <Ok, Err, Err2> Res<Ok, Err>.mapErr(
  * Chains together a sequence of computations that can fail. Next block
  * will only be called if the previous computation was [Res.Ok].
  */
-inline fun <Ok, Err, Ok2> Res<Ok, Err>.andThen(
-    nextBlock: (value: Ok) -> Res<Ok2, Err>
-): Res<Ok2, Err> = when (this) {
+inline fun <Value, Error, Value2> Res<Value, Error>.andThen(
+    nextBlock: (value: Value) -> Res<Value2, Error>
+): Res<Value2, Error> = when (this) {
     is Res.Ok -> nextBlock(value)
     is Res.Err -> this
 }
