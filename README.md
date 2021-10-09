@@ -1,5 +1,5 @@
 # Okres
-Concise result type representing success and error values
+Concise result type representing success and error values. Reduces the pain of dealing with exceptions in Kotlin.
 
 ```kotlin
 sealed interface Res<out Value, out Error> {
@@ -27,16 +27,10 @@ interface FetchEmails {
 fun main(fetchEmails: FetchEmails) {
   fetchEmails()
     .onOk { value ->
-      when(value) {
-        Value.NoEmails -> println("no emails")
-        Value.Emails -> println(value.emails)
-      }
+      // do something with the value
     }
     .onErr { error ->
-      when(error) {
-        Error.BadCredentials -> println("bad credentials")
-        Error.BadConnection -> println("bad connection")
-      }
+      // handle error
     }
 }
 ```
@@ -45,6 +39,6 @@ fun main(fetchEmails: FetchEmails) {
 ```gradle
 // for jvm projects
 dependencies {
-    implementation 'de.halfbit:okres-jvm:2.0'
+    implementation 'de.halfbit:okres-jvm:2.1'
 }
 ```
