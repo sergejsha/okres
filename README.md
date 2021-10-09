@@ -42,8 +42,8 @@ fun main(fetchEmails: FetchEmails) {
 ```
 
 # Binaries
-```
-// for java projects
+```gradle
+// for jvm projects
 dependencies {
     implementation 'de.halfbit:okres-jvm:1.0'
 }
