@@ -1,5 +1,6 @@
 # Okres
-Concise result type representing success and error values. Reduces the pain of dealing with exceptions in Kotlin.
+Concise result type representing success and error values. 
+Reduces the pain of dealing with exceptions in Kotlin.
 
 ```kotlin
 sealed interface Res<out Value, out Error> {
