@@ -1,11 +1,11 @@
 plugins {
-    kotlin("multiplatform") version "1.5.10"
+    kotlin("multiplatform") version "1.6.10"
     `maven-publish`
     signing
 }
 
 group = "de.halfbit"
-version = "2.1"
+version = "2.2"
 
 buildscript {
     repositories {
@@ -24,9 +24,7 @@ kotlin {
         }
     }
     js(LEGACY) {
-        browser {
-
-        }
+        browser {}
     }
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
@@ -37,7 +35,7 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
 
-    
+
     sourceSets {
         val commonMain by getting
         val commonTest by getting
