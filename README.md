@@ -11,7 +11,7 @@ sealed interface Res<out Value, out Error> {
 
 # Usage example
 ```kotlin
-fun main(
+suspend fun main(
     fetchEmails: FetchEmails,
     processEmails: ProcessEmails,
 ) {
@@ -30,7 +30,7 @@ fun main(
 }
 
 interface FetchEmails {
-    operator fun invoke(): Res<Value, Error>
+    suspend operator fun invoke(): Res<Value, Error>
 
     sealed interface Value {
         object NoEmails : Value
@@ -44,7 +44,7 @@ interface FetchEmails {
 }
 
 interface ProcessEvents {
-    operator fun invoke(emails: List<Email>): Res<Error, Unit>
+    suspend operator fun invoke(emails: List<Email>): Res<Error, Unit>
 
     object Error
 }
