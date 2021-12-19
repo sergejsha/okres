@@ -11,28 +11,42 @@ sealed interface Res<out Value, out Error> {
 
 # Usage example
 ```kotlin
-interface FetchEmails {
-  operator fun invoke(): Res<Value, Error>
-  
-  sealed interface Value {
-    object NoEmails : Value
-    data class Emails(val emails: List<Email>) : Value
-  }
-
-  enum class Error {
-     BadCredentials,
-     BadConnection
-  }
+fun main(
+    fetchEmails: FetchEmails,
+    processEmails: ProcessEmails,
+) {
+  fetchEmails()
+    .andThen { emails -> processEmails(emails) }
+    .onOk { value -> 
+        println("emails were fetched and processed") 
+    }
+    .onErr { error -> 
+        when(error) {
+            FetchEmails.Error.BadCredentials -> handleBadCredentials()
+            FetchEmails.Error.BadConnection -> handleBadConnected()
+            ProcessEvents.Error -> handleProcessingError()
+        } 
+    }
 }
 
-fun main(fetchEmails: FetchEmails) {
-  fetchEmails()
-    .onOk { value ->
-      // do something with the value
+interface FetchEmails {
+    operator fun invoke(): Res<Value, Error>
+
+    sealed interface Value {
+        object NoEmails : Value
+        data class Emails(val emails: List<Email>) : Value
     }
-    .onErr { error ->
-      // handle error
+
+    enum class Error {
+        BadCredentials,
+        BadConnection
     }
+}
+
+interface ProcessEvents {
+    operator fun invoke(emails: List<Email>): Res<Error, Unit>
+
+    object Error
 }
 ```
 

@@ -67,9 +67,9 @@ inline fun <Value, Error, Error2> Res<Value, Error>.mapErr(
  * fails. The `nextBlock` function is only called if the previous
  * computation was [Res.Ok].
  */
-inline fun <Value, Error, Value2> Res<Value, Error>.andThen(
-    nextBlock: (value: Value) -> Res<Value2, Any>
-): Res<Value2, Any> = when (this) {
+inline fun <InputValue, Error, OutputValue> Res<InputValue, Error>.andThen(
+    nextBlock: (value: InputValue) -> Res<OutputValue, Any>
+): Res<OutputValue, Any> = when (this) {
     is Res.Ok -> nextBlock(value)
     is Res.Err -> Res.Err(err)
 }
