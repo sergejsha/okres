@@ -54,6 +54,6 @@ interface ProcessEvents {
 ```gradle
 // for jvm projects
 dependencies {
-    implementation 'de.halfbit:okres-jvm:2.1'
+    implementation 'de.halfbit:okres-jvm:2.2'
 }
 ```
