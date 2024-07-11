@@ -1,19 +1,21 @@
 pluginManagement {
-    includeBuild("convention-plugins")
     repositories {
         google()
-        mavenCentral()
         gradlePluginPortal()
+        mavenCentral()
     }
 }
 
 dependencyResolutionManagement {
-    @Suppress("UnstableApiUsage")
     repositories {
         google()
+        gradlePluginPortal()
         mavenCentral()
     }
-}
 
-rootProject.name = "okres"
-include(":okres")
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
+}

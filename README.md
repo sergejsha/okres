@@ -1,59 +1,59 @@
-# Okres
-Concise result type representing success and error values. 
-Reduces the pain of dealing with exceptions in Kotlin.
+[![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/okres.svg)](https://central.sonatype.com/artifact/de.halfbit/logger)
+
+# 👌 OkRes
+
+Simple multiplatform result monad library for Kotlin.
+
+[The Result Monad](https://adambennett.dev/2020/05/the-result-monad/)
+
+# Dependencies
+
+In `gradle/libs.versions.toml`
+
+```toml
+[versions]
+kotlin = "2.0.0"
+okres = "3.0"
+
+[libraries]
+okres = { module = "de.halfbit:okres", version.ref = "okres" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+```
+
+In `shared/build.gradle.kts`
 
 ```kotlin
-sealed interface Res<out Value, out Error> {
-    data class Ok<out Value>(val value: Value) : Res<Value, Nothing>
-    data class Err<out Error>(val error: Error) : Res<Nothing, Error>
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+}
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.okres)
+        }
+    }
 }
 ```
 
-# Usage example
-```kotlin
-suspend fun main(
-    fetchEmails: FetchEmails,
-    processEmails: ProcessEmails,
-) {
-  fetchEmails()
-    .andThen { emails -> processEmails(emails) }
-    .onOk { value -> 
-        println("emails were fetched and processed") 
-    }
-    .onErr { error -> 
-        when(error) {
-            FetchEmails.Error.BadCredentials -> handleBadCredentials()
-            FetchEmails.Error.BadConnection -> handleBadConnected()
-            ProcessEvents.Error -> handleProcessingError()
-        } 
-    }
-}
+# Release
 
-interface FetchEmails {
-    suspend operator fun invoke(): Res<Value, Error>
+1. Bump version in `root.publication.gradle.kts` of the root project
+2. `./gradlew clean build publishAllPublicationsToCentralRepository`
 
-    sealed interface Value {
-        object NoEmails : Value
-        data class Emails(val emails: List<Email>) : Value
-    }
+# License
 
-    enum class Error {
-        BadCredentials,
-        BadConnection
-    }
-}
-
-interface ProcessEvents {
-    suspend operator fun invoke(emails: List<Email>): Res<Error, Unit>
-
-    object Error
-}
 ```
+Copyright 2023-2024 Sergej Shafarenka, www.halfbit.de
 
-# Binaries
-```gradle
-// for jvm projects
-dependencies {
-    implementation 'de.halfbit:okres-jvm:2.2'
-}
+You are FREE to use, copy, redistribute, remix, transform, and build 
+upon the material or its derivative FOR ANY LEGAL PURPOSES.
+
+Any distributed derivative work containing this material or parts 
+of it must have this copyright attribution notices.
+
+The material is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+OR CONDITIONS OF ANY KIND, either express or implied.
 ```
