@@ -1,4 +1,5 @@
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/okres.svg)](https://central.sonatype.com/artifact/de.halfbit/logger)
+![maintenance-status](https://img.shields.io/badge/maintenance-experimental-blue.svg)
 
 # 👌 OkRes
 
