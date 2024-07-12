@@ -7,6 +7,31 @@ Simple multiplatform result monad library for Kotlin.
 
 [The Result Monad](https://adambennett.dev/2020/05/the-result-monad/)
 
+# Usage example
+
+```kotlin
+// given message processing functions
+fun readMessage(): Res<String, Error> =
+    "Message in a bottle".asOk
+
+fun validateMessage(message: String): Res<String, Error> =
+    if (message.isNotBlank()) message.asOk else Error.asErr
+
+fun storeMessage(message: String): Res<String, Error> =
+    runCatchingRes { /* store message */ message }.mapErr { Error }
+
+fun sendNotificationFor(message: String): Res<String, Error> =
+    runCatchingRes { /* send notification */ message }.mapErr { Error }
+
+// process the message and log results
+readMessage()
+    .andThen(::validateMessage)
+    .andThen(::storeMessage)
+    .andThen(::sendNotificationFor)
+    .onOk { message -> println("Message processed: $message") }
+    .onErr { error -> println("Message processing failed: $error") }
+```
+
 # Dependencies
 
 In `gradle/libs.versions.toml`
