@@ -9,7 +9,7 @@ class ResTest {
     fun onOk_called_whenServiceReturnsSuccess() {
         // given
         val expected = 20
-        val reader = ReadingService(expected.ok)
+        val reader = ReadingService(expected.asOk)
 
         // when
         var actual = 0
@@ -23,7 +23,7 @@ class ResTest {
     fun onErr_notCalled_whenServiceReturnsSuccess() {
         // given
         val expected = 20
-        val reader = ReadingService(expected.ok)
+        val reader = ReadingService(expected.asOk)
 
         // when
         var actual = 0
@@ -38,7 +38,7 @@ class ResTest {
     fun onErr_called_whenServiceReturnsError() {
         // given
         val expected = Err.NoConnection
-        val reader = ReadingService(expected.err)
+        val reader = ReadingService(expected.asErr)
 
         // when
         var actual: Err? = null
@@ -52,7 +52,7 @@ class ResTest {
     fun onOk_notCalled_whenServiceReturnsError() {
         // given
         val expected = Err.UserNotLogged
-        val reader = ReadingService(expected.err)
+        val reader = ReadingService(expected.asErr)
 
         // when
         var onOkCalled = false
@@ -66,8 +66,8 @@ class ResTest {
     fun andThen_called_whenBothServicesReturnSuccess() {
         // given
         val expected = Success
-        val reader = ReadingService(10.ok)
-        val validator = ValidatingService(expected.ok)
+        val reader = ReadingService(10.asOk)
+        val validator = ValidatingService(expected.asOk)
 
         // when
         var actual1: Success? = null
@@ -78,14 +78,14 @@ class ResTest {
 
         // then
         assertEquals(expected, actual1)
-        assertEquals(expected.ok, actual2)
+        assertEquals(expected.asOk, actual2)
     }
 
     @Test
     fun andThen_onErrCalled() {
         // given
-        val expected = Error.err
-        val reader = ReadingService(10.ok)
+        val expected = Error.asErr
+        val reader = ReadingService(10.asOk)
         val validator = ValidatingService(expected)
 
         // when
@@ -104,8 +104,8 @@ class ResTest {
     fun andThen_onErrCalled_whenFirstServiceReturnsError() {
         // given
         val expected = Err.NoConnection
-        val reader = ReadingService(expected.err)
-        val validator = ValidatingService(Success.ok)
+        val reader = ReadingService(expected.asErr)
+        val validator = ValidatingService(Success.asOk)
 
         // when
         var actual: Any? = null
@@ -122,8 +122,8 @@ class ResTest {
     fun andThen_onErrCalled_whenSecondServiceReturnsError() {
         // given
         val expected = Error
-        val reader = ReadingService(10.ok)
-        val validator = ValidatingService(expected.err)
+        val reader = ReadingService(10.asOk)
+        val validator = ValidatingService(expected.asErr)
 
         // when
         var actual: Any? = null

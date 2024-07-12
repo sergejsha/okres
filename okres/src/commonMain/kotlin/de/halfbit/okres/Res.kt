@@ -1,14 +1,21 @@
 package de.halfbit.okres
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
 public sealed class Res<out Ok, out Err>
 public data class OkRes<out Ok>(val value: Ok) : Res<Ok, Nothing>()
 public data class ErrRes<out Err>(val error: Err) : Res<Nothing, Err>()
 
-public val <Ok> Ok.ok: OkRes<Ok> get() = OkRes(this)
-public val <Err> Err.err: ErrRes<Err> get() = ErrRes(this)
+public val <Ok> Ok.asOk: OkRes<Ok> get() = OkRes(this)
+public val <Err> Err.asErr: ErrRes<Err> get() = ErrRes(this)
 
 public fun <Ok> ok(value: Ok): OkRes<Ok> = OkRes(value)
 public fun <Err> err(value: Err): ErrRes<Err> = ErrRes(value)
+
+public val <Ok, Err> Res<Ok, Err>.isOk: Boolean get() = this is OkRes
+public val <Ok, Err> Res<Ok, Err>.isErr: Boolean get() = this is ErrRes
 
 /** Object representing a generic success result. Use it instead of Unit. */
 public data object Success
@@ -52,4 +59,28 @@ public inline fun <Ok, Err> Res<Ok, Err>.onRes(
         is ErrRes -> onErr(error)
     }
     return this
+}
+
+public inline fun <Ok, Err, R> Res<Ok, Err>.mapRes(
+    onOk: (value: Ok) -> R,
+    onErr: (error: Err) -> R
+): R {
+    return when (this) {
+        is OkRes -> onOk(value)
+        is ErrRes -> onErr(error)
+    }
+}
+
+@OptIn(ExperimentalContracts::class)
+public inline fun <R> runCatchingRes(
+    block: () -> R
+): Res<R, Error> {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return try {
+        ok(block())
+    } catch (e: Throwable) {
+        err(Error)
+    }
 }

@@ -11,11 +11,11 @@ class ApiUsabilityTest {
         val service = Service()
 
         val res = service
-            .read(Success.ok)
-            .andThen { service.validate(Success.ok) }
+            .read(Success.asOk)
+            .andThen { service.validate(Success.asOk) }
 
-        when(res) {
-            is OkRes -> assertEquals(Success.ok, res)
+        when (res) {
+            is OkRes -> assertEquals(Success.asOk, res)
             is ErrRes -> assertFails { }
         }
     }
@@ -26,12 +26,12 @@ class ApiUsabilityTest {
         val service = Service()
 
         val res = service
-            .read(Success.ok)
-            .andThen { service.validate(Error.err) }
+            .read(Success.asOk)
+            .andThen { service.validate(Error.asErr) }
 
-        when(res) {
+        when (res) {
             is OkRes -> assertFails { }
-            is ErrRes -> assertEquals(Error.err, res)
+            is ErrRes -> assertEquals(Error.asErr, res)
         }
     }
 
@@ -40,16 +40,46 @@ class ApiUsabilityTest {
         val service = Service()
 
         service
-            .read(Success.ok)
-            .andThen { service.validate(Success.ok) }
+            .read(Success.asOk)
+            .andThen { service.validate(Success.asOk) }
             .onRes(
                 onOk = { value -> assertEquals(Success, value) },
-                onErr = { assertFails { }  }
+                onErr = { assertFails { } }
             )
+    }
+
+    @Test
+    fun runCatchingRes_ReturnsError() {
+        val service = Service()
+
+        val res: Res<Success, Error> =
+            runCatchingRes {
+                service.send(shouldThrow = true)
+                Success
+            }
+
+        assertEquals(Error.asErr, res)
+    }
+
+    @Test
+    fun mapRes() {
+        val service = Service()
+
+        val actual =
+            service.read(Success.asOk)
+                .mapRes(
+                    onOk = { "success" },
+                    onErr = { "error" }
+                )
+
+        assertEquals("success", actual)
     }
 }
 
 private class Service {
     fun read(result: Res<Success, Error>): Res<Success, Error> = result
     fun validate(result: Res<Success, Error>): Res<Success, Error> = result
+    fun send(shouldThrow: Boolean) {
+        if (shouldThrow) throw Exception("kaboom")
+    }
 }
