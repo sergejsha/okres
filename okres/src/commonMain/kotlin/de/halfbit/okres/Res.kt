@@ -46,7 +46,7 @@ public inline fun <Ok, Ok2, Err> Res<Ok, Err>.andThen(
 ): Res<Ok2, Err> {
     return when (val actual = this) {
         is OkRes -> block(actual.value)
-        is ErrRes -> ErrRes(actual.error)
+        is ErrRes -> err(actual.error)
     }
 }
 
@@ -61,7 +61,7 @@ public inline fun <Ok, Err> Res<Ok, Err>.onRes(
     return this
 }
 
-public inline fun <Ok, Err, R> Res<Ok, Err>.mapRes(
+public inline fun <Ok, Err, R> Res<Ok, Err>.map(
     onOk: (value: Ok) -> R,
     onErr: (error: Err) -> R
 ): R {
@@ -71,16 +71,34 @@ public inline fun <Ok, Err, R> Res<Ok, Err>.mapRes(
     }
 }
 
+public inline fun <Ok, Err, R> Res<Ok, Err>.mapErr(
+    block: (error: Err) -> R
+): Res<Ok, R> {
+    return when (this) {
+        is OkRes -> ok(this.value)
+        is ErrRes -> err(block(error))
+    }
+}
+
+public inline fun <Ok, Err, R> Res<Ok, Err>.mapOk(
+    block: (value: Ok) -> R
+): Res<R, Err> {
+    return when (this) {
+        is OkRes -> ok(block(value))
+        is ErrRes -> err(error)
+    }
+}
+
 @OptIn(ExperimentalContracts::class)
 public inline fun <R> runCatchingRes(
     block: () -> R
-): Res<R, Error> {
+): Res<R, Throwable> {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
     return try {
         ok(block())
     } catch (e: Throwable) {
-        err(Error)
+        err(e)
     }
 }

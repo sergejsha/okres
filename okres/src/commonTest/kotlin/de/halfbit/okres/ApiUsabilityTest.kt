@@ -56,6 +56,10 @@ class ApiUsabilityTest {
             runCatchingRes {
                 service.send(shouldThrow = true)
                 Success
+            }.mapErr {
+                assertEquals("kaboom", it.message)
+                it.printStackTrace()
+                Error
             }
 
         assertEquals(Error.asErr, res)
@@ -67,7 +71,7 @@ class ApiUsabilityTest {
 
         val actual =
             service.read(Success.asOk)
-                .mapRes(
+                .map(
                     onOk = { "success" },
                     onErr = { "error" }
                 )
