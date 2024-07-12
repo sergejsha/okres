@@ -1,5 +1,5 @@
 [![Maven Central](http://img.shields.io/maven-central/v/de.halfbit/okres.svg)](https://central.sonatype.com/artifact/de.halfbit/okres)
-![maintenance-status](https://img.shields.io/badge/maintenance-experimental-blue.svg)
+[![maintenance-status](https://img.shields.io/badge/maintenance-experimental-blue.svg)](https://gist.github.com/taiki-e/ad73eaea17e2e0372efb76ef6b38f17b)
 
 # 👌 OkRes
 
