@@ -13,7 +13,7 @@ In `gradle/libs.versions.toml`
 ```toml
 [versions]
 kotlin = "2.0.0"
-okres = "3.0"
+okres = "4.0"
 
 [libraries]
 okres = { module = "de.halfbit:okres", version.ref = "okres" }
