@@ -44,7 +44,7 @@ kotlin {
 publishing {
     publications.withType<MavenPublication> {
         pom {
-            description.set("Simple multiplatform result monad library for Kotlin")
+            description.set("Simple multiplatform result monad library for Kotlin.")
         }
     }
 }

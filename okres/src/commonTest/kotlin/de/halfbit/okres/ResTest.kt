@@ -1,5 +1,6 @@
 package de.halfbit.okres
 
+import de.halfbit.okres.ReadingService.Err
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -8,13 +9,13 @@ import kotlin.test.assertTrue
 class ResTest {
 
     @Test
-    fun onOkIsCalledForOkRes() {
+    fun onOk_calledForOkRes() {
         // given
-        val expected = OkRes<Int, Reader.Err>(20)
-        val reader = Reader(value = expected)
+        val expected = 20.ok
+        val reader = ReadingService(readingResult = expected)
 
         // when
-        val res = reader.readValue()
+        val res = reader.read()
 
         // then
         var onOkCalled = false
@@ -26,13 +27,13 @@ class ResTest {
     }
 
     @Test
-    fun onErrIsNotCalledForOkRes() {
+    fun onErr_notCalledForOkRes() {
         // given
-        val expected = OkRes<Int, Reader.Err>(20)
-        val reader = Reader(value = expected)
+        val expected = 20.ok
+        val reader = ReadingService(readingResult = expected)
 
         // when
-        val res = reader.readValue()
+        val res = reader.read()
 
         // then
         var onErrCalled = false
@@ -43,13 +44,13 @@ class ResTest {
     }
 
     @Test
-    fun onErrIsCalledForErrRes() {
+    fun onErr_calledForErrRes() {
         // given
-        val expected = ErrRes<Int, Reader.Err>(Reader.Err.NoConnection)
-        val reader = Reader(value = expected)
+        val expected = Err.NoConnection.err
+        val reader = ReadingService(readingResult = expected)
 
         // when
-        val res = reader.readValue()
+        val res = reader.read()
 
         // then
         var onErrCalled = false
@@ -61,13 +62,13 @@ class ResTest {
     }
 
     @Test
-    fun onOkIsNotCalledForErrRes() {
+    fun onOk_notCalledForErrRes() {
         // given
-        val expected = ErrRes<Int, Reader.Err>(Reader.Err.UserNotLogged)
-        val reader = Reader(value = expected)
+        val expected = Err.UserNotLogged.err
+        val reader = ReadingService(readingResult = expected)
 
         // when
-        val res = reader.readValue()
+        val res = reader.read()
 
         // then
         var onErrCalled = false
@@ -76,16 +77,104 @@ class ResTest {
         }
         assertFalse(onErrCalled)
     }
+
+    @Test
+    fun andThen_onOkCalled() {
+        // given
+        val expected = Success.ok
+        val reader = ReadingService(10.ok)
+        val validator = ValidatingService(expected)
+
+        // when
+        var onOkCalled = false
+        val actual =
+            reader.read()
+                .andThen { validator.validate(it) }
+                .onOk { onOkCalled = true }
+
+        // then
+        assertTrue(onOkCalled)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun andThen_onErrCalled() {
+        // given
+        val expected = Error.err
+        val reader = ReadingService(10.ok)
+        val validator = ValidatingService(expected)
+
+        // when
+        var onErrCalled = false
+        val actual =
+            reader.read()
+                .andThen { validator.validate(it) }
+                .onErr { onErrCalled = true }
+
+        // then
+        assertTrue(onErrCalled)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun andThen_onErrCalled_whenFirstServiceReturnsError() {
+        // given
+        val expected = Err.NoConnection.err
+        val reader = ReadingService(expected)
+        val validator = ValidatingService(Success.ok)
+
+        // when
+        var actual: ErrRes<Any>? = null
+        reader.read()
+                .andThen { validator.validate(it) }
+                .onErr { actual = it }
+
+        // then
+        assertEquals(expected, actual)
+        assertFalse(validator.called)
+    }
+
+    @Test
+    fun andThen_onErrCalled_whenSecondServiceReturnsError() {
+        // given
+        val expected = Error.err
+        val reader = ReadingService(10.ok)
+        val validator = ValidatingService(expected)
+
+        // when
+        var actual: ErrRes<Any>? = null
+        reader.read()
+                .andThen { validator.validate(it) }
+                .onErr { actual = it }
+
+        // then
+        assertEquals(expected, actual)
+    }
 }
 
-private class Reader(
-    private val value: Res<Int, Err>,
+private class ReadingService(
+    private val readingResult: Res<Int, Err>,
 ) {
+    var called = false
 
     sealed interface Err {
         data object NoConnection : Err
         data object UserNotLogged : Err
     }
 
-    fun readValue(): Res<Int, Err> = value
+    fun read(): Res<Int, Err> {
+        called = true
+        return readingResult
+    }
+}
+
+private class ValidatingService(
+    private val validatingResult: Res<Success, Error>,
+) {
+    var called = false
+
+    fun validate(value: Int): Res<Success, Error> {
+        called = true
+        return validatingResult
+    }
 }
