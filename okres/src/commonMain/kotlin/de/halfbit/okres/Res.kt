@@ -1,8 +1,8 @@
 package de.halfbit.okres
 
 public sealed class Res<out Ok, out Err>
-public data class OkRes<out Ok>(val ok: Ok) : Res<Ok, Nothing>()
-public data class ErrRes<out Err>(val err: Err) : Res<Nothing, Err>()
+public data class OkRes<out Ok>(val value: Ok) : Res<Ok, Nothing>()
+public data class ErrRes<out Err>(val error: Err) : Res<Nothing, Err>()
 
 public val <Ok> Ok.ok: OkRes<Ok> get() = OkRes(this)
 public val <Err> Err.err: ErrRes<Err> get() = ErrRes(this)
@@ -17,28 +17,39 @@ public data object Success
 public data object Error
 
 public inline fun <Ok, Err> Res<Ok, Err>.onOk(
-    block: (ok: OkRes<Ok>) -> Unit
+    block: (value: Ok) -> Unit
 ): Res<Ok, Err> {
     if (this is OkRes) {
-        block(this)
+        block(value)
     }
     return this
 }
 
 public inline fun <Ok, Err> Res<Ok, Err>.onErr(
-    block: (err: ErrRes<Err>) -> Unit
+    block: (error: Err) -> Unit
 ): Res<Ok, Err> {
     if (this is ErrRes) {
-        block(this)
+        block(error)
     }
     return this
 }
 
 public inline fun <Ok, Ok2, Err> Res<Ok, Err>.andThen(
-    block: (Ok) -> Res<Ok2, Err>
+    block: (value: Ok) -> Res<Ok2, Err>
 ): Res<Ok2, Err> {
     return when (val actual = this) {
-        is OkRes -> block(actual.ok)
-        is ErrRes -> ErrRes(actual.err)
+        is OkRes -> block(actual.value)
+        is ErrRes -> ErrRes(actual.error)
     }
+}
+
+public inline fun <Ok, Err> Res<Ok, Err>.onRes(
+    onOk: (value: Ok) -> Unit,
+    onErr: (error: Err) -> Unit
+): Res<Ok, Err> {
+    when (this) {
+        is OkRes -> onOk(value)
+        is ErrRes -> onErr(error)
+    }
+    return this
 }
