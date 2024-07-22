@@ -7,6 +7,8 @@ Simple multiplatform result monad library for Kotlin.
 
 [The Result Monad](https://adambennett.dev/2020/05/the-result-monad/)
 
+![Architecture diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/sergejsha/okres/master/documentation/architecture.v1.iuml)
+
 # Usage example
 
 ```kotlin

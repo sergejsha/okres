@@ -1,0 +1,41 @@
+@startuml
+skinparam packageStyle rectangle
+hide empty members
+hide stereotype
+hide circle
+
+class "Res<out Ok, out Err>" as Res {
+    onOk()
+    onErr()
+    onRes()
+    ..
+    mapOk()
+    mapErr()
+    map()
+    ..
+    andThen()
+}
+class "OkRes<Ok, Nothing>" as OkRes
+class "ErrRes<Nothing, Err>" as ErrRes
+
+Res <|.. OkRes
+Res <|.. ErrRes
+
+class "Any<extensions>" as Any {
+    asOk: OkRes
+    asErr: ErrRes
+    ..
+    isOk(): Boolean
+    isErr(): Boolean
+}
+
+package "Generic results" {
+    object Success
+    object Error
+}
+
+package "Top-level functions" {
+    object "runCatching(): Res<R, Throwable>" as runCatching
+}
+
+@enduml
