@@ -11,25 +11,25 @@ Simple multiplatform result monad library for Kotlin.
 
 ```kotlin
 // given message processing functions
-fun readMessage(): Res<String, Error> =
+fun receiveMessage(): Res<String, Error> =
     "Message in a bottle".asOk
 
-fun validateMessage(message: String): Res<String, Error> =
+fun decryptMessage(message: String): Res<String, Error> =
     if (message.isNotBlank()) message.asOk else Error.asErr
 
-fun storeMessage(message: String): Res<String, Error> =
-    runCatchingRes { /* store message */ message }.mapErr { Error }
+fun readMessage(message: String): Res<String, Error> =
+    runCatchingRes { /* ... */ message }.mapErr { Error }
 
-fun sendNotificationFor(message: String): Res<String, Error> =
-    runCatchingRes { /* send notification */ message }.mapErr { Error }
+fun forwardMessage(message: String): Res<String, Error> =
+    runCatchingRes { /* ... */ message }.mapErr { Error }
 
 // process the message and log results
-readMessage()
-    .andThen(::validateMessage)
-    .andThen(::storeMessage)
-    .andThen(::sendNotificationFor)
+receiveMessage()
+    .andThen(::decryptMessage)
+    .andThen(::readMessage)
+    .andThen(::forwardMessage)
     .onOk { message -> println("Message processed: $message") }
-    .onErr { error -> println("Message processing failed: $error") }
+    .onErr { error -> println("Processing failed: $error") }
 ```
 
 # Dependencies
@@ -66,7 +66,7 @@ kotlin {
 
 # Releasing
 
-1. Bump version in `root.publication.gradle.kts` of the root project
+1. Bump version in `root.publication.gradle.kts`
 2. `./gradlew clean build publishAllPublicationsToCentralRepository`
 
 # License
