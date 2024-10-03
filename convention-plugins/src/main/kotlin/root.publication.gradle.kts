@@ -4,5 +4,5 @@ plugins {
 
 allprojects {
     group = "de.halfbit"
-    version = "5.2"
+    version = "5.3"
 }

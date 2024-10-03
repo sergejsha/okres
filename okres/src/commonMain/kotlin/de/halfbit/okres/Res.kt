@@ -71,12 +71,23 @@ public inline fun <Ok, Err, R> Res<Ok, Err>.map(
     }
 }
 
+/** Maps pure error to pure error type. */
 public inline fun <Ok, Err, R> Res<Ok, Err>.mapErr(
     block: (error: Err) -> R
 ): Res<Ok, R> {
     return when (this) {
         is OkRes -> ok(this.value)
         is ErrRes -> err(block(error))
+    }
+}
+
+/** Maps pure error to Res type. Use it when mapping function can turn an error also into ok type. */
+public inline fun <Ok, Err, R> Res<Ok, Err>.mapErrRes(
+    block: (error: Err) -> Res<Ok, R>
+): Res<Ok, R> {
+    return when (this) {
+        is OkRes -> ok(this.value)
+        is ErrRes -> block(error)
     }
 }
 

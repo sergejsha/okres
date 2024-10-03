@@ -3,7 +3,7 @@
 
 # 👌 OkRes
 
-Simple multiplatform result monad library for Kotlin.
+Oversimplified multiplatform result monad library for Kotlin.
 
 [The Result Monad](https://adambennett.dev/2020/05/the-result-monad/)
 
@@ -40,8 +40,8 @@ In `gradle/libs.versions.toml`
 
 ```toml
 [versions]
-kotlin = "2.0.0"
-okres = "5.2"
+kotlin = "2.0.20"
+okres = "5.3"
 
 [libraries]
 okres = { module = "de.halfbit:okres", version.ref = "okres" }
